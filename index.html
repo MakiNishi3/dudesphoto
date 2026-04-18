@@ -2,72 +2,24 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="ui.css">
 </head>
 <body>
-<input type="file" id="file">
-<div id="wrap">
-<canvas id="c"></canvas>
-</div>
-<div id="err"></div>
-<button id="commit">commit changes to apply</button>
+<input type="file" id="upload">
+<canvas id="canvas"></canvas>
+
+<div id="controls">
+<button id="add">add effect</button>
+<button id="remove">remove effect</button>
 <button id="export">export png</button>
+</div>
 
 <script src="app/filters.js"></script>
-<script src="../filters"></script>
-
-<script>
-const file=document.getElementById("file")
-const c=document.getElementById("c")
-const ctx=c.getContext("2d")
-const err=document.getElementById("err")
-let img=new Image()
-let lastLoad=0
-
-function setError(t){
-err.textContent=t
-}
-
-file.onchange=e=>{
-const f=e.target.files[0]
-if(!f)return
-const r=new FileReader()
-r.onload=ev=>{
-img=new Image()
-img.onload=()=>{
-c.width=img.width
-c.height=img.height
-ctx.drawImage(img,0,0)
-lastLoad=Date.now()
-setError("")
-}
-img.src=ev.target.result
-}
-r.readAsDataURL(f)
-}
-
-function checkExpiry(){
-if(!lastLoad)return
-if(Date.now()-lastLoad>60*60*1000){
-setError("Your image has expired")
-}
-}
-
-setInterval(checkExpiry,1000)
-
-document.getElementById("commit").onclick=()=>{
-if(!img.src)return
-ctx.clearRect(0,0,c.width,c.height)
-ctx.drawImage(img,0,0)
-if(window.applyFilters)window.applyFilters(ctx,c)
-}
-
-document.getElementById("export").onclick=()=>{
-const a=document.createElement("a")
-a.download="export.png"
-a.href=c.toDataURL("image/png")
-a.click()
-}
-</script>
+<script src="../filters.js"></script>
+<script src="app/ui.js"></script>
+<script src="app/filter.js"></script>
+<script src="app/test.js"></script>
+  <script src="app/apply.js"></script>
 </body>
 </html>
